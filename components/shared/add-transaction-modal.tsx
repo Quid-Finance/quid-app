@@ -1,15 +1,14 @@
+'use client'
+
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "../ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { useForm } from "react-hook-form";
-import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-
-const formSchema = z.object({
-  // NOTE: Has to be a string since we're dealing with BigInts in the backend
-  amount: z.string().min(1, "Amount is required"),
-})
+import { NewTransaction, newTransactionSchema } from "@/lib/transactions/model";
+import { createTransaction } from "@/lib/transactions/actions";
+import { buildFormData } from "@/lib/utils";
 
 export const AddTransactionModal = (
   {
@@ -20,15 +19,16 @@ export const AddTransactionModal = (
     setIsOpen: (open: boolean) => void
   }
 ) => {
-  const addTransactionForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const addTransactionForm = useForm<NewTransaction>({
+    resolver: zodResolver(newTransactionSchema),
     defaultValues: {
       amount: '',
+      id: crypto.randomUUID()
     }
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+  const onSubmit = async (values: NewTransaction) => {
+    await createTransaction(buildFormData(values))
     setIsOpen(false)
     addTransactionForm.reset()
   }
@@ -45,7 +45,10 @@ export const AddTransactionModal = (
           </DrawerHeader>
           <div className='p-4'>
             <Form {...addTransactionForm}>
-              <form onSubmit={addTransactionForm.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={addTransactionForm.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={addTransactionForm.control}
                   name="amount"
