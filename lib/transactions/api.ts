@@ -2,7 +2,7 @@ import { fetchTransactionsResponseSchema, NewTransaction, Transaction, transacti
 
 
 export const fetchTransactions = async (): Promise<Transaction[]> => {
-  const response = await fetch('http://localhost:8080/transactions', {
+  const response = await fetch(`${process.env.TRANSACTIONS_SVC_URL}/transactions`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ export const fetchTransactions = async (): Promise<Transaction[]> => {
 }
 
 export const postTransaction = async (newTransaction: NewTransaction) => {
-  const response = await fetch('http://localhost:8080/transactions', {
+  const response = await fetch(`${process.env.TRANSACTIONS_SVC_URL}/transactions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
