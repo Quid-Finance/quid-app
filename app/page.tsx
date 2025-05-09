@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { RecentTransactions } from "./components/recent-transactions";
 
 export default function Home() {
